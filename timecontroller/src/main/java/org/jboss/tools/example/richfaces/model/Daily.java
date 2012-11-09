@@ -9,6 +9,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
 import org.jboss.tools.example.richfaces.data.QueryParametersInterface;
@@ -29,10 +30,18 @@ public class Daily extends TimePeriod implements QueryParametersInterface{
 	private CriteriaQuery<Daily> q; 
 	private Root<Daily> c;
 	
-	public void queryBuilder(CriteriaBuilder cb){
+	public void queryBuilder(CriteriaBuilder cb, long start, long end){
 		q = cb.createQuery(Daily.class);
 		c = q.from(Daily.class);
 		q.select(c);
+		Path<Long> str= c.get("start");
+		Path<Long> fin= c.get("finish");
+		q.where(
+			      cb.and(
+			          cb.gt(str, start),
+			          cb.lt(fin, end)
+			      )
+			  );
 		
 	}
 	public void union( CriteriaBuilder cb, String first, String second ){
